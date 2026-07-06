@@ -186,6 +186,65 @@ void decrypt_file() {
     printf("Decryption finished.\n");
 }
 
+void simulate_brute_force() {
+    char target[256];
+    char alphabet[] = "abcdefghijklmnopqrstuvwxyz0123456789";
+    int alphabet_len = strlen(alphabet);
+    
+    printf("Enter a short target password (lowercase/digits, max 4 chars for speed): ");
+    scanf("%255s", target);
+    
+    int target_len = strlen(target);
+    if (target_len > 4) {
+        printf("Password too long for a quick simulation.\n");
+        return;
+    }
+
+    char attempt[5] = {0};
+    long long counter = 0;
+
+    for (int i = 0; i < alphabet_len; i++) {
+        attempt[0] = alphabet[i];
+        attempt[1] = '\0';
+        counter++;
+        if (strcmp(attempt, target) == 0) goto found;
+
+        if (target_len > 1) {
+            for (int j = 0; j < alphabet_len; j++) {
+                attempt[1] = alphabet[j];
+                attempt[2] = '\0';
+                counter++;
+                if (strcmp(attempt, target) == 0) goto found;
+
+                if (target_len > 2) {
+                    for (int k = 0; k < alphabet_len; k++) {
+                        attempt[2] = alphabet[k];
+                        attempt[3] = '\0';
+                        counter++;
+                        if (strcmp(attempt, target) == 0) goto found;
+
+                        if (target_len > 3) {
+                            for (int l = 0; l < alphabet_len; l++) {
+                                attempt[3] = alphabet[l];
+                                attempt[4] = '\0';
+                                counter++;
+                                if (strcmp(attempt, target) == 0) goto found;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    printf("Password not found in standard space.\n");
+    return;
+
+found:
+    printf("\n[SUCCESS] Password cracked: %s\n", attempt);
+    printf("Total attempts required: %lld\n", counter);
+}
+
 int main() {
     OpenSSL_add_all_algorithms();
 
@@ -200,7 +259,8 @@ int main() {
         printf("2. File Integrity (SHA-256)\n");
         printf("3. Encrypt File (AES-256)\n");
         printf("4. Decrypt File (AES-256)\n");
-        printf("5. Exit\n");
+        printf("5. Simulate Brute-Force Attack\n");
+        printf("6. Exit\n");
         printf("Choose: ");
 
         scanf("%d", &choice);
@@ -225,6 +285,10 @@ int main() {
                 break;
 
             case 5:
+                simulate_brute_force();
+                break;
+
+            case 6:
                 printf("Exiting...\n");
                 EVP_cleanup();
                 return 0;
@@ -236,3 +300,4 @@ int main() {
 
     return 0;
 }
+
