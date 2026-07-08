@@ -125,6 +125,17 @@ void shred_file() {
     printf("File shredded and deleted.\n");
 }
 
+void generate_secure_password() {
+    int length;
+    printf("Enter length: "); scanf("%d", &length);
+    unsigned char *buffer = malloc(length);
+    RAND_bytes(buffer, length);
+    printf("Generated: ");
+    for(int i = 0; i < length; i++) printf("%02x", buffer[i]);
+    printf("\n");
+    free(buffer);
+}
+
 void simulate_brute_force() {
     char target[256], alphabet[] = "abcdefghijklmnopqrstuvwxyz0123456789";
     int alphabet_len = strlen(alphabet);
@@ -165,7 +176,7 @@ int main() {
     int choice;
     char password[256];
     while (1) {
-        printf("\n1. Pwd Strength | 2. Hash | 3. Encrypt | 4. Decrypt | 5. Brute-Force | 6. Shred | 7. Exit\nChoice: ");
+        printf("\n1. Pwd Strength | 2. Hash | 3. Encrypt | 4. Decrypt | 5. Brute-Force | 6. Shred | 7. Generate Secure Pwd | 8. Exit\nChoice: ");
         scanf("%d", &choice);
         switch (choice) {
             case 1: printf("Pass: "); scanf("%255s", password); check_password_strength(password); break;
@@ -174,7 +185,8 @@ int main() {
             case 4: decrypt_file(); break;
             case 5: simulate_brute_force(); break;
             case 6: shred_file(); break;
-            case 7: EVP_cleanup(); return 0;
+            case 7: generate_secure_password(); break;
+            case 8: EVP_cleanup(); return 0;
             default: printf("Invalid\n");
         }
     }
