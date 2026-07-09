@@ -5,6 +5,7 @@
 #include <openssl/sha.h>
 #include <openssl/evp.h>
 #include <openssl/rand.h>
+#include <zlib.h>
 
 void check_password_strength(char password[]) {
     int length = strlen(password);
@@ -136,6 +137,20 @@ void generate_secure_password() {
     free(buffer);
 }
 
+void compress_file() {
+    char input[256], output[256];
+    printf("Input file: "); scanf("%255s", input);
+    printf("Output (gz) file: "); scanf("%255s", output);
+    gzFile outFile = gzopen(output, "wb");
+    FILE *inFile = fopen(input, "rb");
+    if (!outFile || !inFile) { printf("Error opening files.\n"); return; }
+    char buf[128];
+    int num;
+    while ((num = fread(buf, 1, sizeof(buf), inFile)) > 0) gzwrite(outFile, buf, num);
+    gzclose(outFile); fclose(inFile);
+    printf("File compressed.\n");
+}
+
 void simulate_brute_force() {
     char target[256], alphabet[] = "abcdefghijklmnopqrstuvwxyz0123456789";
     int alphabet_len = strlen(alphabet);
@@ -176,7 +191,7 @@ int main() {
     int choice;
     char password[256];
     while (1) {
-        printf("\n1. Pwd Strength | 2. Hash | 3. Encrypt | 4. Decrypt | 5. Brute-Force | 6. Shred | 7. Generate Secure Pwd | 8. Exit\nChoice: ");
+        printf("\n1. Pwd Strength | 2. Hash | 3. Encrypt | 4. Decrypt | 5. Brute-Force | 6. Shred | 7. Generate Secure Pwd | 8. Compress | 9. Exit\nChoice: ");
         scanf("%d", &choice);
         switch (choice) {
             case 1: printf("Pass: "); scanf("%255s", password); check_password_strength(password); break;
@@ -186,7 +201,8 @@ int main() {
             case 5: simulate_brute_force(); break;
             case 6: shred_file(); break;
             case 7: generate_secure_password(); break;
-            case 8: EVP_cleanup(); return 0;
+            case 8: compress_file(); break;
+            case 9: EVP_cleanup(); return 0;
             default: printf("Invalid\n");
         }
     }
