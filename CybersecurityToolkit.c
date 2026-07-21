@@ -148,6 +148,7 @@ void encrypt_file() {
 
     printf("File encrypted successfully.\n");
 }
+
 void decrypt_file() {
     char input[256], output[256], password[256];
 
@@ -376,6 +377,38 @@ found:
     printf("\n[SUCCESS] Cracked: %s | Attempts: %lld\n", attempt, counter);
 }
 
+void decompress_file() {
+    char input[256], output[256];
+
+    printf("Input (gz) file: ");
+    scanf("%255s", input);
+
+    printf("Output file: ");
+    scanf("%255s", output);
+
+    gzFile inFile = gzopen(input, "rb");
+
+    FILE *outFile = fopen(output, "wb");
+
+    if (!inFile || !outFile) {
+        printf("Error opening files.\n");
+        return;
+    }
+
+    char buf[128];
+
+    int num;
+
+    while ((num = gzread(inFile, buf, sizeof(buf))) > 0)
+        fwrite(buf, 1, num, outFile);
+
+    gzclose(inFile);
+
+    fclose(outFile);
+
+    printf("File decompressed.\n");
+}
+
 int main() {
 
     OpenSSL_add_all_algorithms();
@@ -394,8 +427,9 @@ int main() {
         printf("\n6. Shred");
         printf("\n7. Generate Secure Pwd");
         printf("\n8. Compress");
-        printf("\n9. Exit");
-        printf("\n10. File Information");
+        printf("\n9. Decompress");
+        printf("\n10. Exit");
+        printf("\n11. File Information");
 
         printf("\nChoice: ");
 
@@ -437,13 +471,17 @@ int main() {
                 compress_file();
                 break;
 
-            case 10:
-                file_information();
+            case 9:
+                decompress_file();
                 break;
 
-            case 9:
+            case 10:
                 EVP_cleanup();
                 return 0;
+
+            case 11:
+                file_information();
+                break;
 
             default:
                 printf("Invalid\n");
@@ -452,4 +490,3 @@ int main() {
 
     return 0;
 }
-
