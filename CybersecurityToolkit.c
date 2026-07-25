@@ -253,6 +253,30 @@ void file_line_count() {
     printf("Total Lines: %d\n", lines);
 }
 
+void word_count() {
+    char filename[256];
+    printf("Enter file path: ");
+    scanf("%255s", filename);
+    FILE *file = fopen(filename, "r");
+    if (!file) {
+        printf("Cannot open file\n");
+        return;
+    }
+    int words = 0;
+    int in_word = 0;
+    char ch;
+    while ((ch = fgetc(file)) != EOF) {
+        if (isspace(ch)) {
+            in_word = 0;
+        } else if (!in_word) {
+            in_word = 1;
+            words++;
+        }
+    }
+    fclose(file);
+    printf("Total Words: %d\n", words);
+}
+
 void simulate_brute_force() {
     char target[256];
     char alphabet[] = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -323,6 +347,7 @@ int main() {
         printf("\n10. Exit");
         printf("\n11. File Information");
         printf("\n12. File Line Count");
+        printf("\n13. File Word Count");
         printf("\nChoice: ");
         scanf("%d", &choice);
         switch(choice) {
@@ -363,6 +388,9 @@ int main() {
                 break;
             case 12:
                 file_line_count();
+                break;
+            case 13:
+                word_count();
                 break;
             default:
                 printf("Invalid\n");
