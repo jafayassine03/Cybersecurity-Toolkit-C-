@@ -277,6 +277,40 @@ void word_count() {
     printf("Total Words: %d\n", words);
 }
 
+void file_entropy() {
+    char filename[256];
+    printf("Enter file path: ");
+    scanf("%255s", filename);
+    FILE *file = fopen(filename, "rb");
+    if (!file) {
+        printf("Cannot open file\n");
+        return;
+    }
+    unsigned char buffer[32768];
+    size_t bytesRead;
+    unsigned long long counts[256] = {0};
+    unsigned long long total_bytes = 0;
+    while ((bytesRead = fread(buffer, 1, sizeof(buffer), file)) > 0) {
+        for (size_t i = 0; i < bytesRead; i++) {
+            counts[buffer[i]]++;
+            total_bytes++;
+        }
+    }
+    fclose(file);
+    if (total_bytes == 0) {
+        printf("File is empty.\n");
+        return;
+    }
+    double entropy = 0.0;
+    for (int i = 0; i < 256; i++) {
+        if (counts[i] > 0) {
+            double p = (double)counts[i] / total_bytes;
+            entropy -= p * (log2(p));
+        }
+    }
+    printf("\nFile Entropy: %.4f bits per byte\n", entropy);
+}
+
 void simulate_brute_force() {
     char target[256];
     char alphabet[] = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -348,6 +382,7 @@ int main() {
         printf("\n11. File Information");
         printf("\n12. File Line Count");
         printf("\n13. File Word Count");
+        printf("\n14. File Entropy Calculation");
         printf("\nChoice: ");
         scanf("%d", &choice);
         switch(choice) {
@@ -391,6 +426,9 @@ int main() {
                 break;
             case 13:
                 word_count();
+                break;
+            case 14:
+                file_entropy();
                 break;
             default:
                 printf("Invalid\n");
