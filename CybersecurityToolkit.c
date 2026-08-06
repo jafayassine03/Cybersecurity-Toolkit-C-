@@ -311,6 +311,39 @@ void file_entropy() {
     printf("\nFile Entropy: %.4f bits per byte\n", entropy);
 }
 
+void base64_encode_file() {
+    char input[256], output[256];
+    printf("Input file: ");
+    scanf("%255s", input);
+    printf("Output file: ");
+    scanf("%255s", output);
+    FILE *fin = fopen(input, "rb");
+    if (!fin) {
+        printf("Cannot open input file\n");
+        return;
+    }
+    FILE *fout = fopen(output, "w");
+    if (!fout) {
+        fclose(fin);
+        printf("Cannot create output file\n");
+        return;
+    }
+    fseek(fin, 0, SEEK_END);
+    long flen = ftell(fin);
+    fseek(fin, 0, SEEK_SET);
+    unsigned char *inbuf = malloc(flen);
+    fread(inbuf, 1, flen, fin);
+    fclose(fin);
+    int outlen = 4 * ((flen + 2) / 3);
+    char *outbuf = malloc(outlen + 1);
+    int actual_len = EVP_EncodeBlock((unsigned char *)outbuf, inbuf, flen);
+    fwrite(outbuf, 1, actual_len, fout);
+    fclose(fout);
+    free(inbuf);
+    free(outbuf);
+    printf("File base64 encoded successfully.\n");
+}
+
 void simulate_brute_force() {
     char target[256];
     char alphabet[] = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -383,6 +416,7 @@ int main() {
         printf("\n12. File Line Count");
         printf("\n13. File Word Count");
         printf("\n14. File Entropy Calculation");
+        printf("\n15. Base64 Encode File");
         printf("\nChoice: ");
         scanf("%d", &choice);
         switch(choice) {
@@ -429,6 +463,9 @@ int main() {
                 break;
             case 14:
                 file_entropy();
+                break;
+            case 15:
+                base64_encode_file();
                 break;
             default:
                 printf("Invalid\n");
