@@ -18,6 +18,3 @@ This toolkit is designed for educational and personal administrative purposes.
 *   The key derivation function uses a direct SHA-256 mapping of the password for simplicity. 
 *   For enterprise production environments, modern key-stretching mechanisms like **PBKDF2**, **bcrypt**, or **Argon2** are highly recommended to resist advanced hardware-accelerated offline attacks.
 
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
